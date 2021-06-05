@@ -1,25 +1,43 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QWidget, QPushButton,QComboBox
-import sqlite3
 
-class Test(QWidget):
+from PyQt5.QtWidgets import QApplication, QWidget, QPushButton
+from PyQt5.QtWidgets import QMainWindow, QLabel
+
+
+class FirstForm(QMainWindow):
     def __init__(self):
         super().__init__()
         self.initUI()
-        
+
     def initUI(self):
-        con = sqlite3.connect("films.db")
-        cur = con.cursor()
-        
-        self.setGeometry(200, 200, 300, 300)
-        self.setWindowTitle('First program') 
-        self.btn = QComboBox(self)   
-        result = cur.execute("""SELECT * FROM genres""").fetchall()
-        for elem in result:
-            self.btn.addItem(elem[1])
-        
+        self.setGeometry(300, 300, 300, 300)
+        self.setWindowTitle('Главная форма')
+
+        self.btn = QPushButton('Другая форма', self)
+        self.btn.move(100, 100)
+        self.btn.resize(self.btn.sizeHint())
+
+        self.btn.clicked.connect(self.open_second_form)
+
+    def open_second_form(self):
+        self.second_form = SecondForm(self, "Данные для второй формы")
+        self.second_form.show()
+
+
+class SecondForm(QWidget):
+    def __init__(self, *args):
+        super().__init__()
+        self.initUI(args)
+
+    def initUI(self, args):
+        self.setGeometry(300, 300, 300, 300)
+        self.setWindowTitle('Вторая форма')
+        self.lbl = QLabel(args[-1], self)
+        self.lbl.adjustSize()
+
+
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    ex = Test()
-    ex.show()
+    form = FirstForm()
+    form.show()
     sys.exit(app.exec())
